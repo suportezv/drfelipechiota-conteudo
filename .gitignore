@@ -9,3 +9,7 @@ projects/**/*.wav
 projects/**/*.m4a
 projects/**/*.MOV
 projects/**/*.png
+
+# fontes licenciadas do cliente: nunca commitar em repo publico (copia no Drive de brutos)
+assets/fonts/*.otf
+assets/fonts/*.ttf

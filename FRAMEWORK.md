@@ -28,22 +28,61 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 
 ## Assinaturas de edição
 
-Padrão validado da agência:
+**Base: framework de série vertical de talking head da agência (docs do usuário, 2026-08-20), com adaptações do Chiota por cima. Aprovado pelo usuário: legendas seguem o padrão validado da série anterior; trilha com ducking se mantém; destaques inline na paleta do cliente, sem fonte manuscrita.**
 
-- Hook verbal ou visual + título na tela nos **2 primeiros segundos**. Nesta marca: **GC de capa de 3 a 5 palavras no frame 1, sem fade, alto contraste** (quem rola o feed lê antes de ouvir); lower third com a credencial completa do segundo 1 ao 4. Tipografia de GCs e headlines: Clarify-Md maiúscula em tamanho maior, cor da paleta do cliente (paleta **PENDENTE**), com a sombra difusa do framework de legenda.
-- Lettering condensado caps branco com sombra dura; acento colorido nas ênfases (cor da marca: **PENDENTE confirmar**; fonte: Helvetica Neue Condensed Black no Mac; Liberation Sans Bold como fallback Linux).
-- Legendas: **framework fixo do cliente (definido pelo usuário em 2026-08-20, vale para todas as edições deste projeto)**:
-  - 2 a 3 palavras por frase, respeitando as margens de segurança de Reels.
-  - Posição X 0 (centralizado); Y -550 no padrão CapCut, ou o mais próximo da altura geral da boca no enquadramento do take (sem cobrir os lábios).
-  - Fonte do texto: **Clarify-Md** (arquivo em `assets/fonts/`; sem ela, pedir ao usuário, nunca substituir sem avisar). Destaques na mesma fonte em maiúsculas; headlines idem em tamanho maior.
-  - Tamanho de texto 10 (escala CapCut, ~60 px em 1080x1920); espaçamento de caractere -1.
-  - Sombra: opacidade 8%, indefinição 80, distância 8 (sombra difusa sutil, nunca sombra dura).
-  - Cores: legenda branca com a sombra acima; destaques e headlines na paleta do cliente.
-  - Renderizar via PIL (o libass não reproduz a sombra difusa) e SEMPRE por último no filter chain.
-- Cortes secos; punch-ins de zoom 1.10 a 1.22x; freeze frames P&B com card para punchlines; cutaways como payoff de piada. Nesta marca: corte a cada take, **3 a 6 s por plano** via punch-in de 20 a 30% (bruto 4K aberto vira segunda câmera), nenhum take falado acima de 8 s; b-roll de consultório cobre os planos longos.
+### Cortes (respiração)
+
+- Transcrição word-level obrigatória, com cache por arquivo. Varredura de retakes ANTES do plano de corte: n-gramas repetidos (2-5 palavras) em janela de 15 s, protegendo retórica intencional; falsos inícios saem.
+- Silêncios ≥ 0,5 s são cortados **mantendo 0,15 s de folga em cada borda** (pausa nunca zera, senão fica sem fôlego). Silêncio < 0,5 s fica.
+- Cabeça: aparar até a primeira palavra. Cauda: última palavra + 0,35 s de vídeo, com fade de áudio começando em última palavra + 0,03 s (mata a expiração final).
+- Nunca cortar dentro de palavra; fade de áudio de 30 ms em cada borda de corte real.
+- **Grade de frames**: todo limite de corte em `round(t*fps)/fps`; áudio PCM nos intermediários; um único encode AAC no concat; offsets por soma das durações quantizadas (validado aqui: sem isso o desvio chega a ~0,25 s em 7 segmentos).
+
+### Zoom narrativo
+
+- Movimento guiado pelo roteiro, não por alternância geométrica. Easing **sempre cúbico**; trajetória **contínua** entre divisões de beat (refazer o movimento a cada corte = gagueira visual); divisão de beat não leva fade de áudio (não é corte real).
+- Escada adaptada para **bruto 1080p** (a base 1.20 do doc original pressupõe 4K): base 1.06-1.10; ênfase 1.16-1.24; pico ~1.26-1.28; alívio/solução volta a ~1.08 em ~2 s e segura; CTA punch ~1.20 relaxando no fim. Punch de corte = salto de +0.04 a +0.08 entre segmentos.
+- Anti-jitter: upscale 2x antes do zoompan. Âncora no rosto medido do take (não usar valores fixos de outro cliente).
+
+### Cor (3 camadas)
+
+1. Por vídeo, na extração: `colorcorrect=analyze=average, colortemperature=temperature=7000:mix=0.3, eq=contrast=1.07:saturation=1.06:brightness=0.012`.
+2. Série completa: medir tom de pele (máscara YCbCr) de todos os masters, alvo = mediana, corrigir matiz por colorbalance e luminância por gamma (0.80-1.25). **Só rodar com a série inteira masterizada.**
+3. O ajuste da camada 2 entra no mesmo re-encode das legendas (2 gerações de compressão no total).
+
+### Legendas (padrão aprovado, fonte YWFT Clarify Medium em `assets/fonts/`)
+
+| Papel | Tamanho @1080x1920 | Cor | Extras |
+|---|---|---|---|
+| Base | 98 px | branca | espaçamento -4 px, fade simples 50 ms |
+| Destaque | 118 px | palavra-chave na cor da paleta, resto branco | itálico shear 0.22, reveal letra a letra |
+| Destaque forte | 134 px | idem | idem, 1 a 3 por vídeo (conceito central) |
+| Escadinha | 66 px | branca | 1 linha por degrau, offsets -120/0/+120 (4 degraus: -150..+150) |
+
+- Sombra: preta alpha 60/255, blur gaussiano 22 px, offset (12,12). Posição: centro do bloco em y=1140 (~40% da altura). Entrelinhas 1.08 em.
+- Diagramação: 2-3 palavras por tela; **nenhuma tela termina em palavra de função** (partição ótima, não gulosa; cuidado "é"≠"e", "dá"≠"da"); hífen nunca quebra; função pendurada em pausa atravessa a pausa com a próxima palavra; frase larga quebra progressiva com trava de largura (≤ W-56).
+- Reveal letra a letra (~32 ms/letra, deslize vertical + fade, ease-out, ~0,5 s) **só** em destaques e escadinha.
+- Escadinha quando a fala enumera 3-4 itens ou constrói clímax em etapas; texto condensado à essência; o trecho inteiro é da escadinha (sem legenda base simultânea). Procurar ativamente nos roteiros.
+- Render via PIL + overlay (reproduz a sombra difusa real); legendas SEMPRE por último no filter chain.
+- Timing na timeline de saída; verificação de sincronia obrigatória: retranscrever o vídeo final e alinhar por texto (difflib), desvio mediano < 10 ms.
+- Fonte licenciada: **nunca commitar no repo público**; manter cópia na pasta de brutos do Drive.
+
+### GCs e identidade (específico do Chiota)
+
+- GC de capa de 3 a 5 palavras no frame 1, sem fade, alto contraste; lower third com credencial completa (CRM 162427 | RQE 73780) do segundo 1 ao 4; GCs de apoio nos momentos do roteiro. Tipografia: Clarify, destaque na paleta do cliente (paleta **PENDENTE**; provisório azul petróleo #22B8CF).
 - Palavrão não corta: **bipa**.
-- Trilha discreta (vol ~0.12 a 0.15) gerada via ElevenLabs sound-generation; SFX (whoosh, impact, riser, scratch) sincronizados aos cortes.
-- Duração alvo: **20 a 60s**. Loudness final: **-14 LUFS**.
+- Trilha discreta via ElevenLabs sound-generation (~vol 0.09) com **sidechain ducking sob a voz**; SFX só com parcimônia e aprovação (whoosh genérico foi reprovado).
+- Duração alvo: **20 a 60s**. Loudness final: **-14 LUFS** (duas passadas de loudnorm, verificar com ebur128).
+
+### Portões de qualidade (rodar todos antes de mostrar)
+
+1. Sincronia: retranscrever o final, alinhar por texto, desvio mediano < 10 ms.
+2. Ruído sem fala: som acima de -38 dB em janelas sem palavra (margem 0,2 s). Tosse não é silêncio.
+3. Voz alheia: volume ~10 dB abaixo + f0 sustentada fora do padrão do locutor (cuidado com vocal fry).
+4. Legenda dentro do quadro (largura ≤ W-56, escadinha considerando o offset lateral).
+5. Dry-run da diagramação: ordem monotônica, zero telas de 1 palavra de função, zero telas terminando em função.
+6. Ajuste pontual = diff antes/depois contendo exatamente o pedido, e nada mais.
+7. Duração ≈ soma do EDL; filmstrip nos cortes novos; frames dos destaques e escadinha completos.
 
 ## Fórmula da caption
 
