@@ -55,7 +55,7 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 | Papel | Tamanho @1080x1920 | Cor | Extras |
 |---|---|---|---|
 | Base | 98 px | branca | espaçamento -4 px, fade simples 50 ms |
-| Destaque | 118 px | palavra-chave na cor da paleta, resto branco | itálico shear 0.22, reveal letra a letra |
+| Destaque | 118 px | palavra-chave com pincelada #8EC1CD e texto #003751, resto branco | sem itálico, reveal letra a letra (ver assets/design-system.md) |
 | Destaque forte | 134 px | idem | idem, 1 a 3 por vídeo (conceito central) |
 | Escadinha | 66 px | branca | 1 linha por degrau, offsets -120/0/+120 (4 degraus: -150..+150) |
 
