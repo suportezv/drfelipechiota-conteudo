@@ -30,9 +30,16 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 
 Padrão validado da agência:
 
-- Hook verbal ou visual + título na tela nos **2 primeiros segundos**. Nesta marca: **GC de capa de 3 a 5 palavras no frame 1, sem fade, alto contraste** (quem rola o feed lê antes de ouvir); lower third com a credencial completa do segundo 1 ao 4.
+- Hook verbal ou visual + título na tela nos **2 primeiros segundos**. Nesta marca: **GC de capa de 3 a 5 palavras no frame 1, sem fade, alto contraste** (quem rola o feed lê antes de ouvir); lower third com a credencial completa do segundo 1 ao 4. Tipografia de GCs e headlines: Clarify-Md maiúscula em tamanho maior, cor da paleta do cliente (paleta **PENDENTE**), com a sombra difusa do framework de legenda.
 - Lettering condensado caps branco com sombra dura; acento colorido nas ênfases (cor da marca: **PENDENTE confirmar**; fonte: Helvetica Neue Condensed Black no Mac; Liberation Sans Bold como fallback Linux).
-- Legendas frase a frase em branco (não karaokê), terço inferior, SEMPRE por último no filter chain.
+- Legendas: **framework fixo do cliente (definido pelo usuário em 2026-08-20, vale para todas as edições deste projeto)**:
+  - 2 a 3 palavras por frase, respeitando as margens de segurança de Reels.
+  - Posição X 0 (centralizado); Y -550 no padrão CapCut, ou o mais próximo da altura geral da boca no enquadramento do take (sem cobrir os lábios).
+  - Fonte do texto: **Clarify-Md** (arquivo em `assets/fonts/`; sem ela, pedir ao usuário, nunca substituir sem avisar). Destaques na mesma fonte em maiúsculas; headlines idem em tamanho maior.
+  - Tamanho de texto 10 (escala CapCut, ~60 px em 1080x1920); espaçamento de caractere -1.
+  - Sombra: opacidade 8%, indefinição 80, distância 8 (sombra difusa sutil, nunca sombra dura).
+  - Cores: legenda branca com a sombra acima; destaques e headlines na paleta do cliente.
+  - Renderizar via PIL (o libass não reproduz a sombra difusa) e SEMPRE por último no filter chain.
 - Cortes secos; punch-ins de zoom 1.10 a 1.22x; freeze frames P&B com card para punchlines; cutaways como payoff de piada. Nesta marca: corte a cada take, **3 a 6 s por plano** via punch-in de 20 a 30% (bruto 4K aberto vira segunda câmera), nenhum take falado acima de 8 s; b-roll de consultório cobre os planos longos.
 - Palavrão não corta: **bipa**.
 - Trilha discreta (vol ~0.12 a 0.15) gerada via ElevenLabs sound-generation; SFX (whoosh, impact, riser, scratch) sincronizados aos cortes.
