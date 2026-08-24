@@ -69,7 +69,7 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 
 ### GCs e identidade (específico do Chiota)
 
-- GC de capa de 3 a 5 palavras no frame 1, sem fade, alto contraste; lower third com credencial completa (CRM 162427 | RQE 73780) do segundo 1 ao 4; GCs de apoio nos momentos do roteiro. Tipografia: Clarify, destaque na paleta do cliente (paleta **PENDENTE**; provisório azul petróleo #22B8CF).
+- GC de capa de 3 a 5 palavras no frame 1, sem fade, alto contraste; lower third com credencial completa (CRM 162427 | RQE 73780) do segundo 1 ao 4; GCs de apoio nos momentos do roteiro. Tipografia: Clarify, com a paleta e a linguagem de destaque oficiais de `assets/design-system.md` (pincelada #8EC1CD, texto #003751, vinho #5E2947 reservado a assinatura).
 - Palavrão não corta: **bipa**.
 - Trilha discreta via ElevenLabs sound-generation (~vol 0.09) com **sidechain ducking sob a voz**; SFX só com parcimônia e aprovação (whoosh genérico foi reprovado).
 - Duração alvo: **20 a 60s**. Loudness final: **-14 LUFS** (duas passadas de loudnorm, verificar com ebur128).
