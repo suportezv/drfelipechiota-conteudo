@@ -43,3 +43,20 @@ Brutos: 19 arquivos, todos 1080x1920 SDR bt709 8-bit 30 fps (não HLG; sem proxy
 - **Não gravados em nenhuma versão**: vídeo 10 (Escoliose no adolescente) e vídeo 11 (Coluna travada de manhã, o roteiro de melhor nota do lote).
 - Pergunta em aberto do DOCX sobre o vídeo 8 **respondida pelo próprio bruto**: no VID15 o Dr. fala "Sou especialista em cirurgia de coluna", então o hook original do roteiro vale.
 - VID2 tem ruído de claquete verbal no início ("Exato. Vamo lá."); VID3 idem ("Posso? Pode."). Cortar na edição se esses takes forem usados.
+
+## Status de produção
+
+| Vídeo | Roteiro | Status |
+|---|---|---|
+| VID8 | 3 Dorflex | **Final aprovada e renderizada** (1080x1920, 33,5 s, -14.1 LUFS) |
+| VID4, VID5, VID7, VID10, VID11, VID13, VID15, VID16, VID17 | demais | Bloqueados: sem rota de transcrição word-level (ver abaixo) |
+
+## Bloqueio de transcrição (2026-08-26)
+
+O estilo aprovado depende de timestamps por palavra. As três rotas testadas:
+
+- **ElevenLabs Scribe**: cota do plano free esgotada (10000/10000), reset só em **2026-09-18**.
+- **Whisper local** (`hyperframes transcribe`, whisper.cpp): funciona e dá word-level, mas o download do modelo falha porque `huggingface.co` e CDNs (`cdn-lfs.huggingface.co`, `cas-bridge.xethub.hf.co`) estão fora do allowlist do environment.
+- **Descript** (conector ativo, drive da própria agência): bloqueado pelo classificador de permissões por enviar footage do cliente a serviço externo; depende de autorização explícita do usuário.
+
+**Solução recomendada**: liberar `huggingface.co` + `cdn-lfs.huggingface.co` + `cas-bridge.xethub.hf.co` no environment. Isso torna a transcrição local, gratuita, offline e sem enviar material do cliente para terceiros.
