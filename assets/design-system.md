@@ -8,15 +8,16 @@ Extraído dos vetores oficiais do cliente em 2026-08-20 (`Logotipo_DR_Felipe_Chi
 |---|---|---|---|
 | `vinho` | `#5E2947` | wordmark "Dr. Felipe Chiota" | reservado a momentos de assinatura/encerramento; não usar em texto pequeno sobre vídeo |
 | `azul-profundo` | `#003751` | pontos da coluna e tagline | painel do lower third; textos escuros sobre fundo claro |
-| `azul-claro` | `#8EC1CD` | pincelada do símbolo | palavra-chave dos destaques (sobre faixa), pontos da escadinha, linha do CRM |
+| `azul-claro` | `#8EC1CD` | pincelada do símbolo | pontos da escadinha, linha do CRM, detalhes decorativos |
 | `indigo` | `#394F7E` | ícones do cartão | secundário, evitar em vídeo |
+| `azul-vivo` | `#3EC8ED` | derivado do azul-claro (mesmo matiz, saturação e brilho altos) | palavra-chave dos destaques em vídeo (o azul-claro puro é morto demais como texto) |
 | `off-white` | `#FCFCFB` | fundo | equivalente do branco da marca |
 
 ## Tipografia (v2, definida pelo usuário em 2026-08-26 com base nas referências)
 
-- **Par de título**: linha principal em **sans bold pesada** (Helvetica Bold; no Linux o clone FreeSans Bold) + linha secundária em **Garamond** (Apple Garamond; substituta atual EB Garamond 600, itálica 500 para frases suaves), entrelinha apertada. Exemplo canônico da capa: "Dorflex" (bold) sobre "TODA SEMANA?" (Garamond caps).
+- **Par de título**: linha principal em **sans bold pesada** (Helvetica Bold; no Linux o clone FreeSans Bold) + linha secundária em **Garamond** (Apple Garamond; substituta atual EB Garamond 600, itálica 500 para frases suaves), entrelinha apertada. Exemplo canônico da capa: "Dorflex" (bold) sobre "TODA SEMANA?" (Garamond caps). **Entrelinha quase colada nos GCs de topo** (linha 2 encosta na baseline da linha 1).
 - **Corpo de legenda**: YWFT Clarify Medium, branca.
-- **Destaque inline**: palavra-chave em FreeSans Bold ~1.16x do corpo, na cor `azul-claro #8EC1CD`; o resto da frase branco em Clarify. Sem itálico de shear, **sem pincelada** (testada e reprovada pelo usuário), sem caixa alta fina.
+- **Destaque inline**: palavra-chave em FreeSans Bold ~1.16x do corpo, na cor `azul-vivo #3EC8ED`; o resto da frase branco em Clarify. Sem itálico de shear, **sem pincelada** (testada e reprovada pelo usuário), sem caixa alta fina.
 - **Legibilidade em fundo claro** (técnica da REFERENCIA 4): faixas de gradiente escuro sutil atrás das zonas de texto (legenda ~alpha 78, topo ~alpha 112, escadinha ~alpha 70), sempre difusas. O azul claro só vira cor de texto sobre essas faixas.
 - Fontes alternativas aprovadas pelo usuário (enviar arquivo quando quiser usar): Integral+Montserrat, Poppins, Faltando+Doshi, Callum+Sylvan, Scholar+Clarify, Raleway bold+Creato Display, Clarify bold+True Destiny. Poppins 400/500/600/800 e EB Garamond já baixadas via npm @fontsource (rota direta) e convertidas com fonttools.
 
