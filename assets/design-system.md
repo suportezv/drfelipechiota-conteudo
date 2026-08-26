@@ -7,8 +7,8 @@ Extraído dos vetores oficiais do cliente em 2026-08-20 (`Logotipo_DR_Felipe_Chi
 | Token | Hex | Origem no logo | Uso em vídeo |
 |---|---|---|---|
 | `vinho` | `#5E2947` | wordmark "Dr. Felipe Chiota" | reservado a momentos de assinatura/encerramento; não usar em texto pequeno sobre vídeo |
-| `azul-profundo` | `#003751` | pontos da coluna e tagline | texto sobre a pincelada; painel do lower third |
-| `azul-claro` | `#8EC1CD` | pincelada do símbolo | pincelada marca-texto, marcadores, linha do CRM |
+| `azul-profundo` | `#003751` | pontos da coluna e tagline | painel do lower third; textos escuros sobre fundo claro |
+| `azul-claro` | `#8EC1CD` | pincelada do símbolo | palavra-chave dos destaques (sobre faixa), pontos da escadinha, linha do CRM |
 | `indigo` | `#394F7E` | ícones do cartão | secundário, evitar em vídeo |
 | `off-white` | `#FCFCFB` | fundo | equivalente do branco da marca |
 
