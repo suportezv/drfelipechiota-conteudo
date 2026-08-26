@@ -21,7 +21,7 @@ Extraído dos vetores oficiais do cliente em 2026-08-20 (`Logotipo_DR_Felipe_Chi
 - **Legibilidade em fundo claro** (técnica da REFERENCIA 4): faixas de gradiente escuro sutil atrás das zonas de texto (legenda ~alpha 78, topo ~alpha 112, escadinha ~alpha 70), sempre difusas. O azul claro só vira cor de texto sobre essas faixas.
 - Fontes alternativas aprovadas pelo usuário (enviar arquivo quando quiser usar): Integral+Montserrat, Poppins, Faltando+Doshi, Callum+Sylvan, Scholar+Clarify, Raleway bold+Creato Display, Clarify bold+True Destiny. Poppins 400/500/600/800 e EB Garamond já baixadas via npm @fontsource (rota direta) e convertidas com fonttools.
 
-## Kit de SFX (referências 2026-08-26; sempre motivado, nunca solto)
+## Kit de SFX (STANDBY: removido das edições em 2026-08-26 a pedido do usuário; não aplicar sem pedido explícito)
 
 Sintetizado localmente (numpy) em `scratchpad/sfx/`; regenerável pelo script da sessão. Mapeamento fixo:
 
