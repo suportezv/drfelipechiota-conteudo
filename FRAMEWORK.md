@@ -55,11 +55,11 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 | Papel | Tamanho @1080x1920 | Cor | Extras |
 |---|---|---|---|
 | Base | 98 px | branca | espaçamento -4 px, fade simples 50 ms |
-| Destaque | 118 px | palavra-chave com pincelada #8EC1CD e texto #003751, resto branco | sem itálico, reveal letra a letra (ver assets/design-system.md) |
-| Destaque forte | 134 px | idem | idem, 1 a 3 por vídeo (conceito central) |
+| Destaque | corpo 96 px | palavra-chave em FreeSans Bold 1.16x na cor #8EC1CD, resto branco Clarify | sem pincelada e sem shear; reveal letra a letra com SFX typing (ver assets/design-system.md) |
+| Destaque forte | corpo 108 px | idem | idem, 1 a 3 por vídeo (conceito central) |
 | Escadinha | 66 px | branca | 1 linha por degrau, offsets -120/0/+120 (4 degraus: -150..+150) |
 
-- Sombra: preta alpha 60/255, blur gaussiano 22 px, offset (12,12). Posição: centro do bloco em y=1140 (~40% da altura). Entrelinhas 1.08 em.
+- Sombra: preta alpha 60/255, blur 22 px, offset (12,12), mais faixa de gradiente escuro difuso atrás das zonas de texto (técnica da REFERENCIA 4; specs no design-system). Posição: centro do bloco em y=1140.
 - Diagramação: 2-3 palavras por tela; **nenhuma tela termina em palavra de função** (partição ótima, não gulosa; cuidado "é"≠"e", "dá"≠"da"); hífen nunca quebra; função pendurada em pausa atravessa a pausa com a próxima palavra; frase larga quebra progressiva com trava de largura (≤ W-56).
 - Reveal letra a letra (~32 ms/letra, deslize vertical + fade, ease-out, ~0,5 s) **só** em destaques e escadinha.
 - Escadinha quando a fala enumera 3-4 itens ou constrói clímax em etapas; texto condensado à essência; o trecho inteiro é da escadinha (sem legenda base simultânea). Procurar ativamente nos roteiros.
@@ -71,7 +71,7 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 
 - GC de capa de 3 a 5 palavras no frame 1, sem fade, alto contraste; lower third com credencial completa (CRM 162427 | RQE 73780) do segundo 1 ao 4; GCs de apoio nos momentos do roteiro. Tipografia: Clarify, com a paleta e a linguagem de destaque oficiais de `assets/design-system.md` (pincelada #8EC1CD, texto #003751, vinho #5E2947 reservado a assinatura).
 - Palavrão não corta: **bipa**.
-- Trilha discreta via ElevenLabs sound-generation (~vol 0.09) com **sidechain ducking sob a voz**; SFX só com parcimônia e aprovação (whoosh genérico foi reprovado).
+- Trilha discreta (~vol 0.09) com **sidechain ducking sob a voz**. SFX pelo kit e mapeamento do design-system (woosh em zoom, click/pop em entradas, typing em reveal, riser pré ponto-chave), sempre motivados por evento visual, picos 10-15% da fala. GCs de título no par bold sans + Garamond.
 - Duração alvo: **20 a 60s**. Loudness final: **-14 LUFS** (duas passadas de loudnorm, verificar com ebur128).
 
 ### Portões de qualidade (rodar todos antes de mostrar)
