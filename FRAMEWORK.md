@@ -55,7 +55,7 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 | Papel | Tamanho @1080x1920 | Cor | Extras |
 |---|---|---|---|
 | Base | 98 px | branca | espaçamento -4 px, fade simples 50 ms |
-| Destaque | corpo 96 px | palavra-chave em FreeSans Bold 1.16x na cor viva #3EC8ED, resto branco Clarify | sem pincelada e sem shear; reveal letra a letra com SFX typing (ver assets/design-system.md) |
+| Destaque | corpo 96 px | palavra-chave em FreeSans Bold 1.16x na cor viva #3EC8ED, resto branco Clarify | sem pincelada e sem shear; reveal letra a letra silencioso (ver assets/design-system.md) |
 | Destaque forte | corpo 108 px | idem | idem, 1 a 3 por vídeo (conceito central) |
 | Escadinha | 66 px | branca | 1 linha por degrau, offsets -120/0/+120 (4 degraus: -150..+150) |
 
@@ -69,7 +69,7 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 
 ### GCs e identidade (específico do Chiota)
 
-- **Sem GCs de topo** (capa e cards superiores removidos por decisão do usuário em 2026-08-26; o hook fica por conta da fala e das legendas). Lower third com credencial completa (CRM 162427 | RQE 73780) do segundo 1 ao 4. Tipografia e paleta: seguir `assets/design-system.md` (par bold sans + Garamond nos títulos, destaque com peso em #8EC1CD, vinho #5E2947 reservado a assinatura).
+- **Sem GCs de topo** (capa e cards superiores removidos por decisão do usuário em 2026-08-26; o hook fica por conta da fala e das legendas). Lower third com credencial completa (CRM 162427 | RQE 73780) do segundo 1 ao 4. Tipografia e paleta: seguir `assets/design-system.md` (par bold sans + Garamond nos títulos, destaque com peso em #3EC8ED, vinho #5E2947 reservado a assinatura).
 - Palavrão não corta: **bipa**.
 - Áudio: **só voz + trilha discreta (~vol 0.09) com sidechain ducking**. SFX removidos por decisão do usuário em 2026-08-26 (o kit e o mapeamento ficam documentados no design-system para uso futuro apenas se o usuário pedir). O par bold sans + Garamond fica reservado a títulos quando voltarem a existir.
 - Duração alvo: **20 a 60s**. Loudness final: **-14 LUFS** (duas passadas de loudnorm, verificar com ebur128).
