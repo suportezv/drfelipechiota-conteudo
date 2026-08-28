@@ -27,7 +27,8 @@ def norm(t):
 
 def scribe(mp4, cache):
     """Transcreve o final com word timestamps (cache em disco: 1 chamada por arquivo)."""
-    if os.path.exists(cache):
+    # cache invalida quando o vídeo foi re-renderizado depois dela
+    if os.path.exists(cache) and os.path.getmtime(cache) > os.path.getmtime(mp4):
         return json.load(open(cache))
     wav = f"{QA}/_stt.wav"
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", mp4, "-ac", "1", "-ar", "16000", wav], check=True)
