@@ -35,6 +35,8 @@ def corrigir(words):
 def _n(t): return t.lower().strip(".,?!:;")
 def is_func(t): return _n(t) in FUNC and _n(t) not in {"é","dá"}
 def is_fraco(t): return _n(t) in FRACO and _n(t) not in {"é","dá"}
+# cópula sozinha na tela ("é") lê como erro de diagramação, mesmo não sendo palavra de função
+def sozinha_ruim(t): return is_fraco(t) or _n(t) in {"é","dá","são","tem","vem","foi"}
 def _adv(d, ch, f, tam, track=TRACK):
     return max(d.textlength(" ", font=f), tam*0.30) if ch==" " else d.textlength(ch, font=f)+track
 
@@ -109,14 +111,17 @@ def dp_chunk(cl, words):
     tentava evitar."""
     n=len(cl); best=[1e9]*(n+1); best[0]=0; prev=[0]*(n+1)
     for j in range(1,n+1):
-        for k in (1,2,3):
+        for k in (1,2,3,4):
             i=j-k
             if i<0: continue
-            c = 0 if k>1 else (100 if is_fraco(words[cl[i]]["text"]) else 8)
+            # 4 palavras só onde 2 a 3 é impossível sem pendurar preposição:
+            # "de que a dor" (VID7) e "E se a dor" (VID10) têm 3 funções seguidas,
+            # e alcançar a próxima palavra plena exige a quarta.
+            c = 150 if k==4 else (0 if k>1 else (100 if sozinha_ruim(words[cl[i]]["text"]) else 8))
             if j<n:
                 u = words[cl[j-1]]["text"]
-                # terminar em função é proibido na prática; em advérbio fraco, só evitado
-                c += 90 if is_func(u) else (30 if is_fraco(u) else 0)
+                # terminar em função tem de vencer qualquer penalidade de duração; advérbio fraco, não
+                c += 400 if is_func(u) else (30 if is_fraco(u) else 0)
             d = words[cl[j-1]]["end"] - words[cl[i]]["start"]
             if   d < MIN_TELA:  c += 120     # pisca e some
             elif d < CONF_TELA: c += 25
