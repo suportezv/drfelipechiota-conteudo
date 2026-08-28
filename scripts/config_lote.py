@@ -19,7 +19,8 @@ CONFIG = {
                  ("contrário",{"contrário"}), ("avaliação",{"avaliação"})],
  },
  "VID7": {
-   "excluir": [],
+   # gagueira "pre--" antes de "existem"
+   "excluir": [(25.50, 25.71)],
    "escada": [("perda de força","Um"),("dormência","Dois"),
               ("dificuldade pra urinar","Três"),("dor que piora à noite","quatro")],
    "destaques": [("quatro sinais",{"quatro"}), ("ignoram",{"ignoram"}),

@@ -14,11 +14,16 @@ BRANCO, AZUL_VIVO, AZUL_CLARO = (255,255,255,255), (62,200,237,255), (142,193,20
 TRACK, Y_BLOCO = -4, 1140
 SH_A, SH_BLUR, SH_OFF = 60, 22, (12,12)
 GRADE = "colorcorrect=analyze=average,colortemperature=temperature=7000:mix=0.3,eq=contrast=1.07:saturation=1.06:brightness=0.012"
+# FUNC: palavra de função de verdade (artigo, preposição, conjunção, pronome). Tela nunca termina nelas.
 FUNC = {"a","o","as","os","um","uma","de","do","da","dos","das","em","no","na","nos","nas","por","pra",
         "pro","para","com","sem","que","e","ou","se","ao","aos","à","às","meu","minha","seu","sua",
-        "esse","essa","aquela","aquele","cada","ele","ela","isso","mais","já","só"}
+        "esse","essa","aquela","aquele","ele","ela","isso"}
+# FRACO: advérbio/quantificador que fecha mal uma tela mas carrega sentido. Só encarece o DP.
+FRACO = FUNC | {"mais","menos","já","só","cada","muito","bem","tão"}
 Q = lambda t: round(t*FPS)/FPS
-def is_func(t): return t.lower().strip(".,?!:;") in FUNC and t.lower().strip(".,?!:;") not in {"é","dá"}
+def _n(t): return t.lower().strip(".,?!:;")
+def is_func(t): return _n(t) in FUNC and _n(t) not in {"é","dá"}
+def is_fraco(t): return _n(t) in FRACO and _n(t) not in {"é","dá"}
 def _adv(d, ch, f, tam, track=TRACK):
     return max(d.textlength(" ", font=f), tam*0.30) if ch==" " else d.textlength(ch, font=f)+track
 
@@ -87,8 +92,11 @@ def dp_chunk(cl, words):
         for k in (1,2,3):
             i=j-k
             if i<0: continue
-            c = 0 if k>1 else (100 if is_func(words[cl[i]]["text"]) else 8)
-            if j<n and is_func(words[cl[j-1]]["text"]): c += 50
+            c = 0 if k>1 else (100 if is_fraco(words[cl[i]]["text"]) else 8)
+            if j<n:
+                u = words[cl[j-1]]["text"]
+                # terminar em função é proibido na prática; em advérbio fraco, só evitado
+                c += 90 if is_func(u) else (30 if is_fraco(u) else 0)
             if best[i]+c < best[j]: best[j]=best[i]+c; prev[j]=i
     out,j=[],n
     while j>0: out.append(cl[prev[j]:j]); j=prev[j]
@@ -130,7 +138,14 @@ def editar(vid, cfg):
             alvos.append((txt, keep[achou])); cur = achou+1
         if len(alvos)==len(cfg["escada"]): esc = alvos
 
-    esc_span = (alvos[0][1]["start"]-0.15, alvos[-1][1]["end"]+1.0) if esc else None
+    esc_fim_w = None
+    if esc:
+        pos = {id(w): k for k, w in enumerate(keep)}
+        kf = pos[id(alvos[-1][1])]
+        while kf+1 < len(keep) and not keep[kf]["text"].rstrip().endswith((".","?","!")):
+            kf += 1
+        esc_fim_w = keep[kf]
+    esc_span = (alvos[0][1]["start"]-0.15, esc_fim_w["end"]+0.6) if esc else None
     def seg_aberto(a,b): return esc_span and not (b <= esc_span[0] or a >= esc_span[1])
 
     # 5.1 vídeo: segmentos frame-exatos com zoom
@@ -174,7 +189,7 @@ def editar(vid, cfg):
     esc_idx = set()
     if esc:
         ini_i = idx_de[id(alvos[0][1])]
-        fim_w = [w for w in keep if w["end"] <= esc_span[1]][-1]
+        fim_w = esc_fim_w
         # artigo/preposição colada no primeiro degrau ("o movimento") pertence à escadinha,
         # senão sobra pendurada no fim da última tela base
         while ini_i > 0 and words[ini_i-1] in keep and is_func(words[ini_i-1]["text"]) \
@@ -203,11 +218,11 @@ def editar(vid, cfg):
             viz = k-1 if k>0 else k+1
             if abs(telas[viz]["idx"][0]-s["idx"][-1])<=1 or abs(s["idx"][0]-telas[viz]["idx"][-1])<=1:
                 telas[viz]["idx"]=sorted(set(telas[viz]["idx"]+s["idx"])); telas.pop(k); mud=True; break
-    return wk, segs, durs, offs, TOTAL, telas, esc, alvos if esc else None, out_t, words, keep
+    return wk, segs, durs, offs, TOTAL, telas, esc, alvos if esc else None, esc_fim_w, out_t, words, keep
 
 # ---------- 6. RENDER FINAL ----------
 def montar(vid, cfg):
-    wk, segs, durs, offs, TOTAL, telas, esc, alvos, out_t, words, keep = editar(vid, cfg)
+    wk, segs, durs, offs, TOTAL, telas, esc, alvos, esc_fim_w, out_t, words, keep = editar(vid, cfg)
     NF_TOT = sum(durs)
 
     # 6.1 assets de legenda
@@ -248,7 +263,7 @@ def montar(vid, cfg):
     esc_info=None
     if esc:
         E_INI = out_t(alvos[0][1]["start"])-0.15
-        E_FIM = min(TOTAL, (out_t(alvos[-1][1]["end"]) or TOTAL)+1.4)
+        E_FIM = min(TOTAL, (out_t(esc_fim_w["end"]) or TOTAL)+0.9)
         f66=ImageFont.truetype(F_CORPO,66); pr=ImageDraw.Draw(Image.new("RGBA",(4,4)))
         REG_H, STEP = 560, 112
         XOFF = [-150,-50,50,150][:len(alvos)] if len(alvos)==4 else [-120,0,120][:len(alvos)]
