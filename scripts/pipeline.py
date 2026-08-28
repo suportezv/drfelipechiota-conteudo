@@ -119,12 +119,15 @@ def editar(vid, cfg):
     # localizar escadinha
     esc = None
     if cfg["escada"]:
-        alvos=[]
+        alvos, cur = [], 0
         for txt, gatilho in cfg["escada"]:
             g = gatilho.lower().strip(",.?!:;")
-            cand = [w for w in keep if w["text"].lower().strip(",.?!:;")==g]
-            if not cand: break
-            alvos.append((txt, cand[0]))
+            # busca sequencial: o gatilho de um degrau vem sempre depois do anterior.
+            # ("quatro" abre o hook do VID7 e reaparece como quarto degrau aos 16 s)
+            achou = next((k for k in range(cur, len(keep))
+                          if keep[k]["text"].lower().strip(",.?!:;")==g), None)
+            if achou is None: break
+            alvos.append((txt, keep[achou])); cur = achou+1
         if len(alvos)==len(cfg["escada"]): esc = alvos
 
     esc_span = (alvos[0][1]["start"]-0.15, alvos[-1][1]["end"]+1.0) if esc else None
@@ -178,12 +181,13 @@ def editar(vid, cfg):
                 and words[ini_i]["start"] - words[ini_i-1]["end"] < 0.3:
             ini_i -= 1
         esc_idx = {i for i in range(ini_i, idx_de[id(fim_w)]+1)}
-    dest_map = {}
+    dest_map, cur_d = {}, 0
     for frase, chaves in cfg["destaques"]:
         alvo = frase.split()[-1].lower().strip(",.?!:;")
-        for w in keep:
-            if w["text"].lower().strip(",.?!:;")==alvo:
-                dest_map[idx_de[id(w)]] = chaves; break
+        achou = next((k for k in range(cur_d, len(keep))
+                      if keep[k]["text"].lower().strip(",.?!:;")==alvo), None)
+        if achou is None: continue
+        dest_map[idx_de[id(keep[achou])]] = chaves; cur_d = achou+1
     vis = [i for i,w in enumerate(words) if w in keep and i not in esc_idx]
     telas = telas_base(vis, words, set())
     for t_ in telas:
@@ -254,6 +258,9 @@ def montar(vid, cfg):
             x=max(64,min((W-wt)/2+XOFF[di], W-40-wt))
             degs.append({"txt":txt,"t0":out_t(w0["start"])-E_INI,"x":x,"y":40+di*STEP})
         tmp=f"{wk}/esc"; os.makedirs(tmp, exist_ok=True)
+        if E_FIM <= E_INI:
+            raise RuntimeError(f"{vid}: escadinha com span invertido "
+                               f"(ini {E_INI:.2f} > fim {E_FIM:.2f}); confira os gatilhos em config_lote")
         nf=int((E_FIM-E_INI)*FPS)+1
         for fr in range(nf):
             tt=fr/FPS; img=Image.new("RGBA",(W,REG_H),(0,0,0,0)); d=ImageDraw.Draw(img)
@@ -356,7 +363,16 @@ def montar(vid, cfg):
 if __name__ == "__main__":
     sys.path.insert(0,"/home/user/drfelipechiota-conteudo/scripts")
     from config_lote import CONFIG
+    falhas = []
     for v in sys.argv[1:]:
-        r = montar(v, CONFIG[v])
+        try:
+            r = montar(v, CONFIG[v])
+        except Exception as e:                 # um vídeo quebrado não derruba o lote
+            falhas.append((v, f"{type(e).__name__}: {e}"))
+            print(f"FALHA {v}: {type(e).__name__}: {e}", flush=True)
+            continue
         print(f"OK {r['vid']}: {r['dur']}s | {r['segs']} segs | {r['telas']} telas | "
-              f"{r['dest']} destaques | escadinha={r['escada']}")
+              f"{r['dest']} destaques | escadinha={r['escada']}", flush=True)
+    for v, e in falhas:
+        print(f"PENDENTE {v}: {e}", flush=True)
+    sys.exit(1 if falhas else 0)
