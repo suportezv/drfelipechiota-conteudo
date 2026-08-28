@@ -190,11 +190,14 @@ def editar(vid, cfg):
     if esc:
         ini_i = idx_de[id(alvos[0][1])]
         fim_w = esc_fim_w
-        # artigo/preposição colada no primeiro degrau ("o movimento") pertence à escadinha,
-        # senão sobra pendurada no fim da última tela base
-        while ini_i > 0 and words[ini_i-1] in keep and is_func(words[ini_i-1]["text"]) \
-                and words[ini_i]["start"] - words[ini_i-1]["end"] < 0.3:
-            ini_i -= 1
+        # a escadinha começa no início da oração do primeiro degrau, não na palavra-gatilho:
+        # recua até a pontuação anterior. Senão sobra pendurado no fim da última tela base
+        # o rótulo da enumeração ("Erro", VID10) ou o artigo do primeiro item ("o", VID5).
+        passos = 0
+        while (ini_i > 0 and passos < 4 and words[ini_i-1] in keep
+               and not words[ini_i-1]["text"].rstrip().endswith((",", ".", ";", ":", "?", "!"))
+               and words[ini_i]["start"] - words[ini_i-1]["end"] < 0.6):
+            ini_i -= 1; passos += 1
         esc_idx = {i for i in range(ini_i, idx_de[id(fim_w)]+1)}
     dest_map, cur_d = {}, 0
     for frase, chaves in cfg["destaques"]:
