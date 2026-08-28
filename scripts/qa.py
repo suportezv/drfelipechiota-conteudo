@@ -91,9 +91,17 @@ def gate_ruido(vid):
     for w_ in stt.get("words", []):
         a = max(0, int((w_["start"] - 0.2) * sr)); b = min(len(x), int((w_["end"] + 0.2) * sr))
         fala[a:b] = True
+    # a cabeça antes da primeira palavra e a cauda depois da última são fade desenhado,
+    # não silêncio: o decaimento do fade final do VID10 (-31,5 → -35,4 → -45 dB) disparava
+    # o detector. O portão procura ruído ENTRE palavras.
+    palavras = [w_ for w_ in stt.get("words", []) if w_.get("type") == "word"]
+    if not palavras:
+        return False, "sem palavras na retranscrição"
+    ini_s = int(palavras[0]["start"] * sr)
+    fim_s = int(palavras[-1]["end"] * sr)
     win = int(0.10 * sr)
     eventos = []
-    for s in range(0, len(x) - win, win):
+    for s in range(ini_s, min(len(x) - win, fim_s), win):
         if fala[s:s + win].any():
             continue
         rms = float(np.sqrt(np.mean(x[s:s + win] ** 2)) + 1e-9)
