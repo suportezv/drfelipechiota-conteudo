@@ -86,7 +86,16 @@ def faixa(h_px, amax, path):
     img.save(path)
 
 # ---------- 4. DIAGRAMAÇÃO ----------
+MIN_TELA, CONF_TELA, MAX_TELA = 0.30, 0.45, 2.4
+
 def dp_chunk(cl, words):
+    """Partição ótima em telas de 1 a 3 palavras.
+
+    O custo pesa três coisas ao mesmo tempo: quantas palavras a tela tem, em que
+    palavra ela termina e quanto tempo ela fica no ar. A duração entra aqui porque
+    fundir telas curtas depois do DP produzia telas de 5 a 7 palavras
+    ("irradia ou tira força, isso é"), que é pior do que a tela rápida que a fusão
+    tentava evitar."""
     n=len(cl); best=[1e9]*(n+1); best[0]=0; prev=[0]*(n+1)
     for j in range(1,n+1):
         for k in (1,2,3):
@@ -97,6 +106,13 @@ def dp_chunk(cl, words):
                 u = words[cl[j-1]]["text"]
                 # terminar em função é proibido na prática; em advérbio fraco, só evitado
                 c += 90 if is_func(u) else (30 if is_fraco(u) else 0)
+            d = words[cl[j-1]]["end"] - words[cl[i]]["start"]
+            if   d < MIN_TELA:  c += 120     # pisca e some
+            elif d < CONF_TELA: c += 25
+            if d > MAX_TELA:    c += 40      # fica parada tempo demais
+            # pausa longa dentro da tela deixa a legenda pendurada no silêncio
+            c += 35*sum(1 for m in range(i+1, j)
+                        if words[cl[m]]["start"] - words[cl[m-1]]["end"] > 0.45)
             if best[i]+c < best[j]: best[j]=best[i]+c; prev[j]=i
     out,j=[],n
     while j>0: out.append(cl[prev[j]:j]); j=prev[j]
@@ -123,6 +139,11 @@ def editar(vid, cfg):
     words = [w for w in json.load(open(f"{OUT}/transcripts/{vid}.json"))["words"] if w.get("type")=="word"]
     segs, keep = planear_cortes(words, cfg["excluir"])
     idx_de = {id(w): i for i, w in enumerate(words)}
+    # o corte pode remover a palavra que abria a frase ("Agora, dor localizada" no VID11),
+    # deixando a legenda começar em minúscula. Recapitaliza na timeline de saída.
+    for k in range(1, len(keep)):
+        if keep[k-1]["text"].rstrip().endswith((".", "?", "!")) and keep[k]["text"][:1].islower():
+            keep[k]["text"] = keep[k]["text"][0].upper() + keep[k]["text"][1:]
 
     # localizar escadinha
     esc = None
@@ -211,16 +232,6 @@ def editar(vid, cfg):
     for t_ in telas:
         t_["dest"] = any(i in dest_map for i in t_["idx"])
         t_["chaves"] = set().union(*[dest_map[i] for i in t_["idx"] if i in dest_map]) if t_["dest"] else set()
-    # fundir telas curtas
-    mud=True
-    while mud:
-        mud=False
-        for k,s in enumerate(telas):
-            dur = words[s["idx"][-1]]["end"] - words[s["idx"][0]]["start"]
-            if s["dest"] or dur >= 0.35 or len(telas)<2: continue
-            viz = k-1 if k>0 else k+1
-            if abs(telas[viz]["idx"][0]-s["idx"][-1])<=1 or abs(s["idx"][0]-telas[viz]["idx"][-1])<=1:
-                telas[viz]["idx"]=sorted(set(telas[viz]["idx"]+s["idx"])); telas.pop(k); mud=True; break
     return wk, segs, durs, offs, TOTAL, telas, esc, alvos if esc else None, esc_fim_w, out_t, words, keep
 
 # ---------- 6. RENDER FINAL ----------
