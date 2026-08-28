@@ -46,17 +46,45 @@ Brutos: 19 arquivos, todos 1080x1920 SDR bt709 8-bit 30 fps (não HLG; sem proxy
 
 ## Status de produção
 
-| Vídeo | Roteiro | Status |
+Lote fechado em 2026-08-28 com `scripts/pipeline.py` + `scripts/config_lote.py`, estilo aprovado no VID8.
+Todos passaram nos 7 portões de `scripts/qa.py` (63 verificações, nenhuma falha).
+
+| Vídeo | Roteiro | Duração | Telas | Escadinha | Viés sinc. | p90 | LUFS |
+|---|---|---|---|---|---|---|---|
+| VID4 | 1 Medo do especialista | 44,4s | 50 | 4 tratamentos | +0,0 ms | 14,0 ms | -14,1 |
+| VID5 | 2 Repouso piora | 36,2s | 39 | 4 pilares | +0,0 ms | 20,0 ms | -14,1 |
+| VID8 | 3 Dorflex toda semana | 33,5s | 45 | 4 etapas | 0 ms | | -14,1 |
+| VID7 | 4 Quatro sinais | 33,1s | 24 | 4 sinais | -7,0 ms | 14,0 ms | -14,1 |
+| VID10 | 5 Postura no trabalho | 39,8s | 30 | 3 erros | +6,0 ms | 13,1 ms | -14,1 |
+| VID11 | 6 Dor pós-treino | 34,3s | 49 | não | +7,0 ms | 14,0 ms | -14,0 |
+| VID13 | 7 Hérnia cervical | 33,2s | 30 | 3 condutas | +0,5 ms | 15,0 ms | -14,0 |
+| VID15 | 8 Posicionamento | 35,0s | 45 | não | +1,0 ms | 20,0 ms | -14,0 |
+| VID16 | 9 Dor precoce nos jovens | 35,6s | 44 | não | +1,0 ms | 20,7 ms | -14,1 |
+| VID17 | 12 Volta ao esporte | 31,0s | 34 | 3 pilares | +0,0 ms | 20,0 ms | -14,0 |
+
+Retakes e gaguejos cortados: VID4 "Esse mes-- medo"; VID7 "pre--" antes de "existem";
+VID11 "Agora," pendurado; VID13 take abortado "e se você--"; VID15 take abortado + "Peraí";
+VID17 "mas parar..." abortado.
+
+**Correção de transcrição**: no VID15 o Scribe grafou "Felipe Schotta". O nome da marca passa
+por dicionário de correção antes de virar legenda, com portão próprio em `qa.py`.
+
+## Defeitos encontrados na primeira passada (todos viraram portão)
+
+| Defeito | Onde | Correção |
 |---|---|---|
-| VID8 | 3 Dorflex | **Final aprovada e renderizada** (1080x1920, 33,5 s, -14.1 LUFS) |
-| VID4, VID5, VID7, VID10, VID11, VID13, VID15, VID16, VID17 | demais | Bloqueados: sem rota de transcrição word-level (ver abaixo) |
+| Gatilho de degrau casando com palavra igual anterior | VID7 (o "quatro" do hook) | busca sequencial por degrau |
+| Fim da frase vazando como legenda base sobre a escadinha | VID7, VID10, VID13, VID17 | região vai até a pontuação final |
+| Rótulo ou artigo pendurado antes da escadinha | VID4, VID5, VID10, VID13 | recuo até a pontuação anterior |
+| Telas de 5 a 7 palavras | VID10, VID11, VID15, VID16 | duração virou critério do DP; fusão pós-DP removida |
+| Legenda em minúscula abrindo frase | VID11, VID13 | recapitalização pós-corte |
+| Nome próprio errado | VID15 | dicionário de correção |
 
-## Bloqueio de transcrição (2026-08-26)
+Dois portões estavam calibrados errado e foram corrigidos: o de sincronia media a mediana do
+|desvio| contra 10 ms, abaixo do piso do instrumento (grade de 33 ms, Scribe em passos de 10 a
+20 ms), e o de ruído acusava o fade final desenhado. Ver `FRAMEWORK.md`.
 
-O estilo aprovado depende de timestamps por palavra. As três rotas testadas:
+## Próximo passo
 
-- **ElevenLabs Scribe**: cota do plano free esgotada (10000/10000), reset só em **2026-09-18**.
-- **Whisper local** (`hyperframes transcribe`, whisper.cpp): funciona e dá word-level, mas o download do modelo falha porque `huggingface.co` e CDNs (`cdn-lfs.huggingface.co`, `cas-bridge.xethub.hf.co`) estão fora do allowlist do environment.
-- **Descript** (conector ativo, drive da própria agência): bloqueado pelo classificador de permissões por enviar footage do cliente a serviço externo; depende de autorização explícita do usuário.
-
-**Solução recomendada**: liberar `huggingface.co` + `cdn-lfs.huggingface.co` + `cas-bridge.xethub.hf.co` no environment. Isso torna a transcrição local, gratuita, offline e sem enviar material do cliente para terceiros.
+Aguardando aprovação dos proxies para renderizar as entregas finais. Agendamento no Metricool
+segue bloqueado: a marca não tem redes conectadas (networksData vazio).
