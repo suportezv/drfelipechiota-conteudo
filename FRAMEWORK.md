@@ -59,12 +59,17 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 | Destaque forte | corpo 108 px | idem | idem, 1 a 3 por vídeo (conceito central) |
 | Escadinha | 66 px | branca | 1 linha por degrau, offsets -120/0/+120 (4 degraus: -150..+150) |
 
+- Região da escadinha: começa no início da oração do primeiro degrau (recua até a pontuação anterior, no máximo 4 palavras) e termina na pontuação final da frase do último degrau. Sem isso o rótulo da enumeração fica pendurado na tela base ("se reconhece. Erro") e o rabo da última frase vira legenda base por cima da escadinha ainda no ar.
+- Gatilho de degrau e de destaque em busca **sequencial**: a mesma palavra pode aparecer antes (o "quatro" do hook do VID7 casava com o quarto degrau e invertia a região).
+- Nome próprio da marca passa por dicionário de correção antes de virar legenda: o Scribe transcreve "Chiota" como "Schotta".
+- Corte de retake pode remover a palavra que abria a frase; recapitalizar a legenda seguinte na timeline de saída.
+
 - Sombra: preta alpha 60/255, blur 22 px, offset (12,12), mais faixa de gradiente escuro difuso atrás das zonas de texto (técnica da REFERENCIA 4; specs no design-system). Posição: centro do bloco em y=1140.
 - Diagramação: 2-3 palavras por tela; **nenhuma tela termina em palavra de função** (partição ótima, não gulosa; cuidado "é"≠"e", "dá"≠"da"); hífen nunca quebra; função pendurada em pausa atravessa a pausa com a próxima palavra; frase larga quebra progressiva com trava de largura (≤ W-56).
 - Reveal letra a letra (~32 ms/letra, deslize vertical + fade, ease-out, ~0,5 s) **só** em destaques e escadinha.
 - Escadinha quando a fala enumera 3-4 itens ou constrói clímax em etapas; texto condensado à essência; o trecho inteiro é da escadinha (sem legenda base simultânea). Procurar ativamente nos roteiros.
 - Render via PIL + overlay (reproduz a sombra difusa real); legendas SEMPRE por último no filter chain.
-- Timing na timeline de saída; verificação de sincronia obrigatória: retranscrever o vídeo final e alinhar por texto (difflib), desvio mediano < 10 ms.
+- Timing na timeline de saída; verificação de sincronia obrigatória: retranscrever o vídeo final e alinhar por texto (difflib). Critério: **viés (mediana assinada) < 20 ms e p90 do |desvio| < 45 ms**, com ≥ 80% das telas alinhadas. O limiar antigo de 10 ms na mediana do |desvio| ficava abaixo do piso do instrumento (grade de 33 ms, timestamps do Scribe em passos de 10 a 20 ms) e oscilava com o número de telas: o VID4 passava com 8 ms tendo p90 e máximo piores que o VID7, que reprovava com 12 ms.
 - Fonte licenciada: **nunca commitar no repo público**; manter cópia na pasta de brutos do Drive.
 
 ### GCs e identidade (específico do Chiota)
@@ -76,11 +81,11 @@ Do lote jul/ago 2026 (validar com desempenho): mitos e medos (cirurgia, repouso)
 
 ### Portões de qualidade (rodar todos antes de mostrar)
 
-1. Sincronia: retranscrever o final, alinhar por texto, desvio mediano < 10 ms.
+1. Sincronia: retranscrever o final, alinhar por texto, viés < 20 ms e p90 < 45 ms (ver acima).
 2. Ruído sem fala: som acima de -38 dB em janelas sem palavra (margem 0,2 s). Tosse não é silêncio.
 3. Voz alheia: volume ~10 dB abaixo + f0 sustentada fora do padrão do locutor (cuidado com vocal fry).
 4. Legenda dentro do quadro (largura ≤ W-56, escadinha considerando o offset lateral).
-5. Dry-run da diagramação: ordem monotônica, zero telas de 1 palavra de função, zero telas terminando em função.
+5. Dry-run da diagramação: ordem monotônica, zero telas de 1 palavra de função, zero telas terminando em função. Tela de 4 palavras é escape raro, só onde 2 a 3 é impossível sem pendurar preposição (três palavras de função seguidas, como "de que a dor"); no lote jul/ago foram 4 telas em cerca de 345.
 6. Ajuste pontual = diff antes/depois contendo exatamente o pedido, e nada mais.
 7. Duração ≈ soma do EDL; filmstrip nos cortes novos; frames dos destaques e escadinha completos.
 
