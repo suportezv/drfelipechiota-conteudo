@@ -20,7 +20,18 @@ FUNC = {"a","o","as","os","um","uma","de","do","da","dos","das","em","no","na","
         "esse","essa","aquela","aquele","ele","ela","isso"}
 # FRACO: advérbio/quantificador que fecha mal uma tela mas carrega sentido. Só encarece o DP.
 FRACO = FUNC | {"mais","menos","já","só","cada","muito","bem","tão"}
+# O Scribe erra nomes próprios da marca. Corrigido antes de qualquer legenda:
+# um vídeo de apresentação com o sobrenome do médico errado é inaceitável.
+CORRECOES = {"schotta": "Chiota", "chota": "Chiota", "xiota": "Chiota", "schiota": "Chiota",
+             "shota": "Chiota", "quiota": "Chiota"}
 Q = lambda t: round(t*FPS)/FPS
+
+def corrigir(words):
+    for w in words:
+        nu = w["text"].strip(".,?!:;").lower()
+        if nu in CORRECOES:
+            w["text"] = w["text"].replace(w["text"].strip(".,?!:;"), CORRECOES[nu])
+    return words
 def _n(t): return t.lower().strip(".,?!:;")
 def is_func(t): return _n(t) in FUNC and _n(t) not in {"é","dá"}
 def is_fraco(t): return _n(t) in FRACO and _n(t) not in {"é","dá"}
@@ -136,7 +147,8 @@ def telas_base(idxs, words, dest_idx):
 # ---------- 5. PIPELINE POR VÍDEO ----------
 def editar(vid, cfg):
     src = f"{ED}/{vid}.mp4"; wk = f"{OUT}/{vid}"; shutil.rmtree(wk, ignore_errors=True); os.makedirs(wk)
-    words = [w for w in json.load(open(f"{OUT}/transcripts/{vid}.json"))["words"] if w.get("type")=="word"]
+    words = corrigir([w for w in json.load(open(f"{OUT}/transcripts/{vid}.json"))["words"]
+                      if w.get("type")=="word"])
     segs, keep = planear_cortes(words, cfg["excluir"])
     idx_de = {id(w): i for i, w in enumerate(words)}
     # o corte pode remover a palavra que abria a frase ("Agora, dor localizada" no VID11),

@@ -136,8 +136,20 @@ def gate_diagramacao(vid):
     return not prob, ("; ".join(prob) if prob else f"{len(telas)} telas, diagramação limpa")
 
 
+def gate_nomes(vid):
+    """Nenhum erro conhecido de transcrição de nome próprio sobrou na legenda."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from pipeline import CORRECOES
+    telas = json.load(open(f"{OUT}/plan_{vid}.json"))["screens"]
+    ruins = [(round(t["ini"], 2), t["texto"]) for t in telas
+             for p in t["texto"].split() if p.strip(".,?!:;").lower() in CORRECOES]
+    return not ruins, (f"{len(ruins)} telas com nome errado: {ruins[:3]}" if ruins
+                       else "nomes próprios corretos")
+
+
 GATES = [("sincronia", gate_sincronia), ("ruído sem fala", gate_ruido), ("loudness", gate_loudness),
-         ("legenda no quadro", gate_quadro), ("duração", gate_duracao), ("diagramação", gate_diagramacao)]
+         ("legenda no quadro", gate_quadro), ("duração", gate_duracao), ("diagramação", gate_diagramacao),
+         ("nomes próprios", gate_nomes)]
 
 if __name__ == "__main__":
     falhou = False
