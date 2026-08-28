@@ -172,6 +172,11 @@ def editar(vid, cfg):
     if esc:
         ini_i = idx_de[id(alvos[0][1])]
         fim_w = [w for w in keep if w["end"] <= esc_span[1]][-1]
+        # artigo/preposição colada no primeiro degrau ("o movimento") pertence à escadinha,
+        # senão sobra pendurada no fim da última tela base
+        while ini_i > 0 and words[ini_i-1] in keep and is_func(words[ini_i-1]["text"]) \
+                and words[ini_i]["start"] - words[ini_i-1]["end"] < 0.3:
+            ini_i -= 1
         esc_idx = {i for i in range(ini_i, idx_de[id(fim_w)]+1)}
     dest_map = {}
     for frase, chaves in cfg["destaques"]:

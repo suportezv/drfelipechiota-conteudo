@@ -121,8 +121,23 @@ def gate_duracao(vid):
     return abs(d - plano["total"]) < 0.15, f"{d:.2f}s (EDL {plano['total']:.2f}s)"
 
 
+def gate_diagramacao(vid):
+    """Nenhuma tela termina em palavra de função; nenhuma tela de 1 palavra de função; ordem monotônica."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from pipeline import is_func
+    telas = json.load(open(f"{OUT}/plan_{vid}.json"))["screens"]
+    ruins = [(round(t["ini"], 2), t["texto"]) for t in telas if is_func(t["texto"].split()[-1])]
+    sozinhas = [t["texto"] for t in telas if len(t["texto"].split()) == 1 and is_func(t["texto"])]
+    fora = [i for i in range(1, len(telas)) if telas[i]["ini"] < telas[i - 1]["ini"]]
+    prob = []
+    if ruins: prob.append(f"{len(ruins)} terminam em função: {ruins[:3]}")
+    if sozinhas: prob.append(f"{len(sozinhas)} telas de 1 função: {sozinhas[:3]}")
+    if fora: prob.append(f"{len(fora)} fora de ordem")
+    return not prob, ("; ".join(prob) if prob else f"{len(telas)} telas, diagramação limpa")
+
+
 GATES = [("sincronia", gate_sincronia), ("ruído sem fala", gate_ruido), ("loudness", gate_loudness),
-         ("legenda no quadro", gate_quadro), ("duração", gate_duracao)]
+         ("legenda no quadro", gate_quadro), ("duração", gate_duracao), ("diagramação", gate_diagramacao)]
 
 if __name__ == "__main__":
     falhou = False
