@@ -44,22 +44,28 @@ def probe(path, campos):
     return r.stdout.split()
 
 
+ORCAMENTO_MB = 27.5     # abaixo do limite de anexo do chat, com folga de container
+
+
 def entregar(vid):
     src = f"{OUT}/{vid}_FINAL.mp4"
     num, slug = NOMES[vid]
     dst = f"{ENT}/Chiota_{num}_{slug}_ENTREGA.mp4"
+    d_src = float(probe(src, "format=duration")[0])
+    # o teto sai da duração, não de um número fixo: a 6 Mbps o VID4 (44,5 s) deu
+    # 29,8 MB, em cima do limite. Vídeo curto continua no teto de qualidade.
+    teto = min(6_000_000, int(ORCAMENTO_MB * 1024 * 1024 * 8 / d_src) - 192_000)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", src,
                     "-c:v", "libx264", "-crf", "21", "-preset", "slow", "-profile:v", "high",
-                    "-maxrate", "6M", "-bufsize", "12M", "-pix_fmt", "yuv420p",
+                    "-maxrate", str(teto), "-bufsize", str(teto * 2), "-pix_fmt", "yuv420p",
                     "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
                     "-movflags", "+faststart", dst], check=True)
-    d_src = float(probe(src, "format=duration")[0])
     d_dst = float(probe(dst, "format=duration")[0])
     sr = int(probe(dst, "stream=sample_rate")[0])
     mb = os.path.getsize(dst) / 1048576
     li = lufs(dst)
     ok = abs(li - ALVO_LUFS) <= TOL and abs(d_dst - d_src) < 0.10 and sr == 48000 and mb < 29
-    return ok, dst, f"{mb:5.1f} MB | {d_dst:5.2f}s | {li:+.1f} LUFS | {sr} Hz"
+    return ok, dst, f"{mb:5.1f} MB | {d_dst:5.2f}s | {li:+.1f} LUFS | {sr} Hz | teto {teto/1e6:.2f} Mbps"
 
 
 if __name__ == "__main__":
