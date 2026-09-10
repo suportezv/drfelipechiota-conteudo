@@ -24,6 +24,7 @@ FRACO = FUNC | {"mais","menos","já","só","cada","muito","bem","tão"}
 # um vídeo de apresentação com o sobrenome do médico errado é inaceitável.
 CORRECOES = {"schotta": "Chiota", "chota": "Chiota", "xiota": "Chiota", "schiota": "Chiota",
              "shota": "Chiota", "quiota": "Chiota"}
+FOLGA = 0.10            # espaço mínimo entre dois overlays da zona de legenda
 Q = lambda t: round(t*FPS)/FPS
 
 def corrigir(words):
@@ -304,6 +305,16 @@ def montar(vid, cfg):
             x=max(64,min((W-wt)/2+XOFF[di], W-40-wt))
             degs.append({"txt":txt,"t0":out_t(w0["start"])-E_INI,"x":x,"y":40+di*STEP})
         tmp=f"{wk}/esc"; os.makedirs(tmp, exist_ok=True)
+        # A escadinha nunca divide a tela com legenda base. A cauda de 0,9 s depois do
+        # último degrau passava por cima da legenda seguinte (0,46 a 0,82 s em todos os
+        # vídeos com escadinha), então é encurtada até a próxima tela; e a tela anterior
+        # é aparada antes da entrada da escadinha.
+        prox = [m for m in man if m["ini"] >= E_INI]
+        if prox:
+            E_FIM = min(E_FIM, prox[0]["ini"] - FOLGA)
+        for m in man:
+            if m["ini"] < E_INI < m["fim"]:
+                m["fim"] = round(E_INI - FOLGA, 3)
         if E_FIM <= E_INI:
             raise RuntimeError(f"{vid}: escadinha com span invertido "
                                f"(ini {E_INI:.2f} > fim {E_FIM:.2f}); confira os gatilhos em config_lote")
@@ -337,6 +348,16 @@ def montar(vid, cfg):
     d.text((bx+32,by+86),"Ortopedista especialista em coluna",font=ImageFont.truetype(F_CORPO,31),fill=(225,232,235,255))
     d.text((bx+32,by+130),"CRM 162427 | RQE 73780",font=ImageFont.truetype(F_CORPO,31),fill=AZUL_CLARO)
     lt.save(f"{wk}/lt.png")
+
+    # 6.3b nenhuma legenda pode sobrepor outra: verificado antes de compor
+    janelas = [(m["ini"], m["fim"], m["txt"]) for m in man if m["fim"] - m["ini"] > 0.05]
+    if esc_info:
+        janelas.append((esc_info["ini"], esc_info["fim"], "ESCADINHA"))
+    janelas.sort()
+    for (a1, b1, t1), (a2, b2, t2) in zip(janelas, janelas[1:]):
+        if a2 < b1 - 0.001:
+            raise RuntimeError(f"{vid}: legenda sobreposta em {a2:.2f}s, "
+                               f"{b1-a2:.2f}s entre {t1!r} e {t2!r}")
 
     # 6.4 composição (legendas por último)
     inp=["-i",f"{wk}/base.mp4","-loop","1","-t","3.2","-i",f"{wk}/lt.png",
@@ -399,6 +420,8 @@ def montar(vid, cfg):
         f"{OUT}/{vid}_proxy.mp4"], check=True)
     # 6.6 plano para os portões de qualidade (scripts/qa.py)
     json.dump({"total": TOTAL, "segs": segs, "escada": bool(esc_info),
+               "esc_ini": esc_info["ini"] if esc_info else None,
+               "esc_fim": esc_info["fim"] if esc_info else None,
                "screens": [{"texto": m["txt"], "ini": m["ini"], "fim": m["fim"],
                             "png": m["png"], "dest": m["dest"]} for m in man]},
               open(f"{OUT}/plan_{vid}.json", "w"), ensure_ascii=False, indent=1)

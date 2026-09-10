@@ -168,9 +168,29 @@ def gate_nomes(vid):
                        else "nomes próprios corretos")
 
 
+def gate_sobreposicao(vid):
+    """Nenhum overlay da zona de legenda divide a tela com outro.
+
+    A escadinha segurava 0,9 s depois do último degrau sem limite contra a legenda
+    seguinte, e entrava por baixo dela em todos os vídeos com escadinha."""
+    plano = json.load(open(f"{OUT}/plan_{vid}.json"))
+    jan = [(t["ini"], t["fim"], t["texto"]) for t in plano["screens"] if t["fim"] - t["ini"] > 0.05]
+    if plano.get("esc_ini") is not None:
+        jan.append((plano["esc_ini"], plano["esc_fim"], "ESCADINHA"))
+    elif plano.get("escada"):
+        return False, "plano antigo, sem a janela da escadinha; re-renderizar"
+    jan.sort()
+    ruins = [(round(a2, 2), round(b1 - a2, 2), t1, t2)
+             for (a1, b1, t1), (a2, b2, t2) in zip(jan, jan[1:]) if a2 < b1 - 0.001]
+    return not ruins, (f"{len(ruins)} sobreposições: " +
+                       "; ".join(f"{a}s por {d}s entre {t1!r} e {t2!r}" for a, d, t1, t2 in ruins[:3])
+                       if ruins else f"{len(jan)} overlays, nenhum se sobrepõe")
+
+
 GATES = [("sincronia", gate_sincronia), ("ruído sem fala", gate_ruido), ("loudness", gate_loudness),
          ("legenda no quadro", gate_quadro), ("duração", gate_duracao), ("diagramação", gate_diagramacao),
-         ("nomes próprios", gate_nomes)]
+         ("nomes próprios", gate_nomes),
+         ("sobreposição", gate_sobreposicao)]
 
 if __name__ == "__main__":
     falhou = False
