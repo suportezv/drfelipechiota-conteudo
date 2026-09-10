@@ -392,7 +392,7 @@ def montar(vid, cfg):
     subprocess.run(["ffmpeg","-y","-v","error","-i",f"{wk}/video.mp4","-i",f"{wk}/premix.wav","-af",
         f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={j['input_i']}:measured_TP={j['input_tp']}:"
         f"measured_LRA={j['input_lra']}:measured_thresh={j['input_thresh']}:offset={j['target_offset']}:linear=true",
-        "-map","0:v","-map","1:a","-c:v","copy","-c:a","aac","-b:a","192k",
+        "-map","0:v","-map","1:a","-c:v","copy","-c:a","aac","-b:a","192k","-ar","48000",
         "-movflags","+faststart",f"{OUT}/{vid}_FINAL.mp4"], check=True)
     subprocess.run(["ffmpeg","-y","-v","error","-i",f"{OUT}/{vid}_FINAL.mp4","-vf","scale=720:1280",
         "-c:v","libx264","-crf","23","-preset","medium","-pix_fmt","yuv420p","-c:a","copy",
