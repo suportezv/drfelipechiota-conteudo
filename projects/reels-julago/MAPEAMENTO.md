@@ -84,7 +84,29 @@ Dois portões estavam calibrados errado e foram corrigidos: o de sincronia media
 |desvio| contra 10 ms, abaixo do piso do instrumento (grade de 33 ms, Scribe em passos de 10 a
 20 ms), e o de ruído acusava o fade final desenhado. Ver `FRAMEWORK.md`.
 
+## Entregas finais (2026-09-10)
+
+Geradas por `scripts/entregar.py` a partir dos masters CRF 18. Padrão: 1080x1920, H.264 High,
+AAC 192k em 48 kHz, faststart, -14 LUFS. O teto de bitrate sai da duração (orçamento de 27,5 MB,
+limitado a 6 Mbps), então vídeo curto fica no teto de qualidade e vídeo longo cabe no anexo.
+
+| Arquivo | Bruto | Tamanho | Duração | LUFS |
+|---|---|---|---|---|
+| Chiota_01_Medo_do_Especialista_ENTREGA.mp4 | VID4 | 27,8 MB | 44,50s | -14,1 |
+| Chiota_02_Repouso_Piora_ENTREGA.mp4 | VID5 | 14,7 MB | 36,30s | -14,1 |
+| Chiota_03_Dorflex_ENTREGA.mp4 | VID8 | 26,0 MB | 33,50s | -14,1 |
+| Chiota_04_Quatro_Sinais_ENTREGA.mp4 | VID7 | 24,8 MB | 33,10s | -14,1 |
+| Chiota_05_Postura_no_Trabalho_ENTREGA.mp4 | VID10 | 27,9 MB | 39,81s | -14,1 |
+| Chiota_06_Dor_Pos_Treino_ENTREGA.mp4 | VID11 | 24,7 MB | 34,40s | -14,0 |
+| Chiota_07_Hernia_Cervical_ENTREGA.mp4 | VID13 | 23,7 MB | 33,21s | -14,0 |
+| Chiota_08_Posicionamento_ENTREGA.mp4 | VID15 | 24,2 MB | 35,11s | -14,0 |
+| Chiota_09_Dor_Precoce_Jovens_ENTREGA.mp4 | VID16 | 25,1 MB | 35,70s | -14,1 |
+| Chiota_12_Volta_ao_Esporte_ENTREGA.mp4 | VID17 | 22,6 MB | 31,11s | -13,9 |
+
+O `loudnorm` devolve 96 kHz quando a taxa de saída não é fixada; o VID8, entregue antes dessa
+correção, está em 96 kHz. Se for reentregar, rodar `scripts/entregar.py` nele também.
+
 ## Próximo passo
 
-Aguardando aprovação dos proxies para renderizar as entregas finais. Agendamento no Metricool
-segue bloqueado: a marca não tem redes conectadas (networksData vazio).
+Captions dos posts e agendamento. O Metricool segue bloqueado: a marca não tem redes conectadas
+(networksData vazio), e sem isso não há agendamento nem medição de melhor horário.
