@@ -106,6 +106,29 @@ limitado a 6 Mbps), então vídeo curto fica no teto de qualidade e vídeo longo
 O `loudnorm` devolve 96 kHz quando a taxa de saída não é fixada; o VID8, entregue antes dessa
 correção, está em 96 kHz. Se for reentregar, rodar `scripts/entregar.py` nele também.
 
+## Correção pós-entrega (2026-09-10): escadinha sobrepondo legenda
+
+Apontado pelo usuário no vídeo 1. A escadinha segurava 0,9 s depois do último degrau sem limite
+contra a legenda base seguinte, então as duas dividiam a tela. Estava em **todos os seis vídeos
+com escadinha**, de 0,46 s a 0,82 s:
+
+| Vídeo | Sobreposição |
+|---|---|
+| 01 Medo do especialista | 0,59s |
+| 02 Repouso piora | 0,46s |
+| 04 Quatro sinais | 0,61s |
+| 05 Postura no trabalho | 0,82s |
+| 07 Hérnia cervical | 0,62s |
+| 12 Volta ao esporte | 0,61s |
+
+Os três sem escadinha (06, 08, 09) não foram afetados.
+
+A cauda passou a ser encurtada até a próxima tela (folga de 0,10 s) e a tela anterior é aparada
+antes da entrada. Para que não volte: o pipeline monta as janelas de todos os overlays da zona de
+legenda e **falha antes de compor** se duas se cruzarem, e o mesmo virou o portão "sobreposição"
+em `qa.py`, com a janela da escadinha registrada no plano. Os seis foram re-renderizados e
+reentregues; o lote fecha em 72 verificações limpas.
+
 ## Próximo passo
 
 Captions dos posts e agendamento. O Metricool segue bloqueado: a marca não tem redes conectadas
