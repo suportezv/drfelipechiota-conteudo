@@ -88,6 +88,17 @@ echo "== 6. Skills registradas =="
 HF=$(ls -d ~/.claude/skills/*/ 2>/dev/null | while read -r d; do [ -f "$d/SKILL.md" ] && basename "$d"; done | grep -cE 'hyperframes|media-use|motion-graphics|embedded-captions')
 if [ "${HF:-0}" -ge 4 ]; then echo "OK hyperframes ($HF skills com SKILL.md)"; else echo "PENDENTE hyperframes (rode scripts/setup.sh)"; fi
 
-echo "== 7. Na sessão do Claude, validar ainda: =="
+echo "== 7. HyperFrames (doctor via scripts/hf.sh: ffmpeg e Chrome apontados) =="
+_hf="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/hf.sh"
+_doc="$(timeout 120 bash "$_hf" doctor 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g')"
+if echo "$_doc" | grep -q '✓ Chrome' && echo "$_doc" | grep -q '✓ FFmpeg'; then
+  echo "OK (Chrome e FFmpeg aceitos; whisper/Kokoro/MusicGen/Docker são opcionais)"
+else
+  echo "FALHA: hyperframes doctor não aceitou Chrome ou FFmpeg (rode: bash scripts/hf.sh doctor)"
+fi
+_cdn=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js)
+if [ "$_cdn" = "200" ]; then echo "OK cdn.jsdelivr.net (GSAP do template carrega)"; else echo "PENDENTE cdn.jsdelivr.net (HTTP $_cdn): render do HyperFrames só funciona com GSAP vendorizado; ver CLAUDE.md"; fi
+
+echo "== 8. Na sessão do Claude, validar ainda: =="
 echo " - Metricool: getBrandSettings lista a marca drfelipechiota com blog_id 6741532"
 echo " - Kairogen: get_me_context mostra plano e créditos (conta da agência em 18/set/2026: FREE, 0 créditos)"
