@@ -22,6 +22,15 @@ if [ -n "${HTTPS_PROXY:-}" ]; then
   export no_proxy="" NO_PROXY="" HTTP_PROXY="$HTTPS_PROXY"
   export npm_config_proxy="$HTTPS_PROXY" npm_config_https_proxy="$HTTPS_PROXY"
   export npm_config_noproxy="" npm_config_cafile="${SSL_CERT_FILE:-/root/.ccr/ca-bundle.crt}"
+  # O `fetch` embutido do Node NAO le HTTPS_PROXY sozinho (Node >= 22.21 precisa
+  # de NODE_USE_ENV_PROXY=1) e nao confia no CA do proxy sem NODE_EXTRA_CA_CERTS.
+  # Sem os dois, `hyperframes catalog` e `add` dizem "No items found in registry"
+  # em silencio, porque o fetch do registry falha dentro de um try/catch.
+  export NODE_USE_ENV_PROXY=1
+  export NODE_EXTRA_CA_CERTS="${NODE_EXTRA_CA_CERTS:-${SSL_CERT_FILE:-/root/.ccr/ca-bundle.crt}}"
+  # O Chromium do render le https_proxy/http_proxy em MINUSCULA; sem isso ele vai
+  # direto ao firewall de egresso e qualquer <script src="https://cdn..."> falha.
+  export https_proxy="$HTTPS_PROXY" http_proxy="$HTTPS_PROXY"
 fi
 
 exec npx --yes hyperframes "$@"

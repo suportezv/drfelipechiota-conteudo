@@ -25,6 +25,6 @@ Depois: coloque o bruto no Drive (pasta pública) ou anexe na conversa, escreva 
 | ElevenLabs | Transcrição, trilha, SFX, TTS | Chave `sk_...` na env var e no `.env` do video-use |
 | Kairogen | B-roll por IA | Conta da agência (FREE, sem créditos) |
 | OpenAI / Gemini | Imagem por IA | Chaves na env var do environment; validado com `scripts/gera_imagem.py` |
-| HyperFrames | Motion (padrão do estúdio) | `bash scripts/hf.sh <comando>`; render local exige `cdn.jsdelivr.net` liberado ou GSAP vendorizado |
+| HyperFrames | Motion (padrão do estúdio) | `bash scripts/hf.sh <comando>`; render local e registry de 395 blocos validados |
 
 > Este repositório é **público** de propósito: o agendamento no Metricool depende de servir o render por `raw.githubusercontent.com`. Nunca commitar chaves aqui.

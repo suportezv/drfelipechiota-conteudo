@@ -97,7 +97,11 @@ else
   echo "FALHA: hyperframes doctor não aceitou Chrome ou FFmpeg (rode: bash scripts/hf.sh doctor)"
 fi
 _cdn=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js)
-if [ "$_cdn" = "200" ]; then echo "OK cdn.jsdelivr.net (GSAP do template carrega)"; else echo "PENDENTE cdn.jsdelivr.net (HTTP $_cdn): render do HyperFrames só funciona com GSAP vendorizado; ver CLAUDE.md"; fi
+if [ "$_cdn" = "200" ]; then echo "OK cdn.jsdelivr.net (GSAP do template carrega)"; else echo "FALHA cdn.jsdelivr.net (HTTP $_cdn): o render é barrado com sub_timeline_script_failure; ver CLAUDE.md"; fi
+# O registry falha em silêncio ("No items found") quando o fetch do Node não passa
+# pelo proxy, então contar itens é o único teste honesto.
+_itens=$(timeout 150 bash "$_hf" catalog 2>/dev/null | sed "s/\x1b\[[0-9;]*m//g" | awk '/^-----/{f=1;next} f&&NF{c++} END{print c+0}')
+if [ "${_itens:-0}" -ge 100 ]; then echo "OK registry de blocos ($_itens itens)"; else echo "FALHA registry de blocos ($_itens itens): raw.githubusercontent.com ou NODE_USE_ENV_PROXY; ver CLAUDE.md"; fi
 
 echo "== 8. Na sessão do Claude, validar ainda: =="
 echo " - Metricool: getBrandSettings lista a marca drfelipechiota com blog_id 6741532"

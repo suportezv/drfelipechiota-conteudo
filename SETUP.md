@@ -16,8 +16,10 @@ Network **Custom** com `drive.google.com`, `drive.usercontent.google.com` e `api
   for p in ./scripts/setup.sh ./*/scripts/setup.sh; do [ -f "$p" ] && exec bash "$p"; done; p=$(find /home /workspace /repo /app /src -maxdepth 4 -type f -path "*/scripts/setup.sh" 2>/dev/null | head -1); [ -n "$p" ] && exec bash "$p"; echo "setup.sh nao encontrado no repo"; exit 1
   ```
 - Liberados em 18/set/2026 e validados: `api.openai.com`, `generativelanguage.googleapis.com`, `www.googleapis.com`. Chaves `OPENAI_API_KEY` e `GEMINI_API_KEY` cadastradas como env var do environment (nunca no repo, nunca no chat).
-- **Ainda bloqueados e que importam**: `cdn.jsdelivr.net` (sem ele o render do HyperFrames só funciona com GSAP vendorizado), `fonts.googleapis.com` + `fonts.gstatic.com` (Google Fonts em Remotion e HyperFrames), `hyperframes.heygen.com` + `api.heygen.com` + `api2.heygen.com` (docs, registry e render em nuvem). Allowlist é literal por subdomínio.
-- **Env vars recomendadas no environment para o HyperFrames** (até lá, `bash scripts/hf.sh` faz o mesmo por sessão): `HYPERFRAMES_BROWSER_PATH=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`, `HYPERFRAMES_FFMPEG_PATH=/usr/local/bin/ffmpeg`, `HYPERFRAMES_FFPROBE_PATH=/usr/local/bin/ffprobe`, `HYPERFRAMES_SKIP_SKILLS=1`.
+- Liberados na mesma data e validados com render real: `cdn.jsdelivr.net`, `raw.githubusercontent.com`, `fonts.googleapis.com`, `fonts.gstatic.com`, `hyperframes.heygen.com`, `api.heygen.com`, `api2.heygen.com`.
+- **Ainda bloqueados**: `unpkg.com`, `esm.sh`, `cdnjs.cloudflare.com`. Só importam se algum bloco do registry apontar para lá. Allowlist é literal por subdomínio.
+- **Rodar o HyperFrames sempre por `bash scripts/hf.sh <comando>`.** Ele aponta Chrome e ffmpeg e, principalmente, exporta `https_proxy`/`http_proxy` em minúscula (o Chromium ignora a forma maiúscula) e `NODE_USE_ENV_PROXY=1` + `NODE_EXTRA_CA_CERTS` (o fetch do Node idem). Sem isso o render é barrado com `sub_timeline_script_failure` e o registry diz "No items found", mesmo com os domínios liberados.
+- Podem ir para as env vars do environment, porque não dependem da sessão: `HYPERFRAMES_BROWSER_PATH=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`, `HYPERFRAMES_FFMPEG_PATH=/usr/local/bin/ffmpeg`, `HYPERFRAMES_FFPROBE_PATH=/usr/local/bin/ffprobe`, `HYPERFRAMES_SKIP_SKILLS=1`. As de proxy não: o valor de `HTTPS_PROXY` muda a cada sessão.
 
 ## Conectores (cada um exige ação do usuário)
 
