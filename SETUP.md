@@ -17,7 +17,8 @@ Network **Custom** com `drive.google.com`, `drive.usercontent.google.com` e `api
   ```
 - Liberados em 18/set/2026 e validados: `api.openai.com`, `generativelanguage.googleapis.com`, `www.googleapis.com`. Chaves `OPENAI_API_KEY` e `GEMINI_API_KEY` cadastradas como env var do environment (nunca no repo, nunca no chat).
 - Liberados na mesma data e validados com render real: `cdn.jsdelivr.net`, `raw.githubusercontent.com`, `fonts.googleapis.com`, `fonts.gstatic.com`, `hyperframes.heygen.com`, `api.heygen.com`, `api2.heygen.com`.
-- **Ainda bloqueados**: `unpkg.com`, `esm.sh`, `cdnjs.cloudflare.com`. Só importam se algum bloco do registry apontar para lá. Allowlist é literal por subdomínio.
+- Liberados em seguida: `unpkg.com`, `esm.sh`, `cdnjs.cloudflare.com`. Nenhum bloco instalável do registry depende deles hoje; a liberação evita surpresa futura. Allowlist é literal por subdomínio.
+- Segue bloqueado e é inofensivo: `us.i.posthog.com`, telemetria anônima do HyperFrames.
 - **Rodar o HyperFrames sempre por `bash scripts/hf.sh <comando>`.** Ele aponta Chrome e ffmpeg e, principalmente, exporta `https_proxy`/`http_proxy` em minúscula (o Chromium ignora a forma maiúscula) e `NODE_USE_ENV_PROXY=1` + `NODE_EXTRA_CA_CERTS` (o fetch do Node idem). Sem isso o render é barrado com `sub_timeline_script_failure` e o registry diz "No items found", mesmo com os domínios liberados.
 - Podem ir para as env vars do environment, porque não dependem da sessão: `HYPERFRAMES_BROWSER_PATH=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`, `HYPERFRAMES_FFMPEG_PATH=/usr/local/bin/ffmpeg`, `HYPERFRAMES_FFPROBE_PATH=/usr/local/bin/ffprobe`, `HYPERFRAMES_SKIP_SKILLS=1`. As de proxy não: o valor de `HTTPS_PROXY` muda a cada sessão.
 
