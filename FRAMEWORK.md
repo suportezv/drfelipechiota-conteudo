@@ -26,12 +26,29 @@ Estúdio de edição e agendamento para as redes da **Dr. Felipe Chiota**. Frame
 Padrão validado da agência:
 
 - Hook verbal ou visual + título na tela nos **2 primeiros segundos**.
-- Lettering condensado caps branco com sombra dura; acento colorido nas ênfases (cor da marca: **PENDENTE confirmar**; fonte: Helvetica Neue Condensed Black no Mac; Liberation Sans Bold como fallback Linux).
+- Lettering condensado caps branco com sombra dura; acento colorido nas ênfases (cor da marca: **PENDENTE confirmar**, o logo vetorial está no Drive em pasta não pública, ver `CLAUDE.md`; fonte: Helvetica Neue Condensed Black no Mac; Liberation Sans Bold como fallback Linux).
 - Legendas frase a frase em branco (não karaokê), terço inferior, SEMPRE por último no filter chain.
 - Cortes secos; punch-ins de zoom 1.10 a 1.22x; freeze frames P&B com card para punchlines; cutaways como payoff de piada.
 - Palavrão não corta: **bipa**.
 - Trilha discreta (vol ~0.12 a 0.15) gerada via ElevenLabs sound-generation; SFX (whoosh, impact, riser, scratch) sincronizados aos cortes.
 - Duração alvo: **20 a 60s**. Loudness final: **-14 LUFS**.
+
+## Escolha do framework de motion: HyperFrames ou Remotion
+
+O estúdio mantém os dois, e a escolha **não é preferência do momento**: cada peça declara o seu no `BRIEFING.md`, na primeira linha. Sem isso, quem pegar o projeto depois não sabe onde mexer.
+
+**O que decide**: a ponte entre os dois só existe num sentido. Há a skill `remotion-to-hyperframes`; **não existe o inverso**. Então peça feita em HyperFrames é definitiva, e peça feita em Remotion ainda pode migrar. Na dúvida, Remotion é a aposta reversível.
+
+| Use **HyperFrames** quando | Use **Remotion** quando |
+|---|---|
+| É peça de série recorrente, numa gramática de motion já documentada aqui (hoje: **PENDENTE**, nenhuma série definida) | A peça é exceção, fora do padrão da série |
+| Você quer o fluxo pronto: brief, storyboard, registry de ~400 blocos, legendas, áudio, render em nuvem | A composição precisa de lógica de programação, dados ou parametrização |
+| O visual pedido já existe no registry (scanlines, glitch, gráfico, janela de terminal) | Você vai gerar **N variações** da mesma peça mudando nome, cupom, idioma ou número |
+| Ninguém vai reprocessar a peça em outro framework | Há chance real de a peça mudar de destino depois |
+
+**Padrão declarado: HyperFrames.** Ele é o que está integrado ao fluxo do estúdio e o que tem as 20 skills. O Remotion entra por decisão consciente, não por inércia.
+
+**Custo de manter os dois, para vigiar**: dois `node_modules`, dois caminhos de render e dois lugares onde a paleta pode divergir. O terceiro está mitigado, porque os tokens do Remotion vivem só em `remotion/src/marca.ts`, mas **se a paleta da marca mudar, atualizar os dois lados**. Hoje `marca.ts` é placeholder (paleta oficial PENDENTE). Se em alguns meses o Remotion não tiver sido usado em nada, ele vira peso morto e se corta; o inverso não vale, porque o HyperFrames é o que sustenta o fluxo.
 
 ## Fórmula da caption
 
@@ -44,8 +61,8 @@ Padrão validado da agência:
 
 1. Bruto (Drive público ou anexo na conversa) + briefing (pilar, mensagem central, duração, data)
 2. Proxy SDR (se HLG) + transcrição Scribe (timestamps por palavra)
-3. Decupagem/cortes (mapear falas de impacto e picos de áudio)
-4. Cor
+3. Decupagem/cortes (mapear falas de impacto e picos de áudio; com transcrição Scribe, usar `scripts/decupar.py` por âncora de texto e `scripts/relatorio_decupagem.py` para o relatório)
+4. Cor (iPhone HLG: proxy SDR; Sony S-Log2: LUT de `scripts/gera_lut_slog2.py`)
 5. Lettering/motion (PIL, PNGs com fade de alpha)
 6. **Legendas por último**
 7. Trilha + SFX (sound-generation; batidas detectadas por script)
